@@ -2,9 +2,11 @@
     "name": "critical-css",
     "main": "index.js",
     "scripts": {
+        "start": "node index",
         "test": "nyc mocha",
         "precoverage": "rimraf coverage && rimraf .nyc_ouput",
-        "coverage": "nyc report --reporter=html node index.js"
+        "coverage": "nyc report --reporter=html node index.js",
+        "get-critical": "node critical"
     },
     "keywords": [
         "puppeteer",
