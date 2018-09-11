@@ -5,7 +5,7 @@ const fs = require('fs');
 const dateFormat = require('dateformat');
 
 const today = new Date();
-const deviceName = 'iPhone 6';
+const deviceName = 'Nexus 10';
 const path = require('path');
 
 const basePath = 'dist';
