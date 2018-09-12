@@ -1,7 +1,8 @@
-const devices = require('puppeteer/DeviceDescriptors');
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const devices = require('puppeteer/DeviceDescriptors');
 const deviceName = 'Pixel 2';
+const fs = require('fs');
+const CleanCSS = require('clean-css');
 
 (async () => {
     const browser = await puppeteer.launch();
@@ -32,7 +33,9 @@ const deviceName = 'Pixel 2';
             newCssString += entry.text.substring(range.start, range.end) + "\n";
         });
     }
-    fs.writeFileSync(`SUCCESS.css`, newCssString, 'utf8'); // TODO minify
+    newCssString += "body{width:100vw}";
+    const minifiedCss = new CleanCSS({ compatibility: '*' }).minify(newCssString).styles;
+    fs.writeFileSync(`SUCCESS.css`, minifiedCss, 'utf8');
     
     await browser.close();
 })();
