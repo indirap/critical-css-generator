@@ -5,7 +5,7 @@ const fs = require('fs');
 const dateFormat = require('dateformat');
 
 const today = new Date();
-const deviceName = 'Nexus 10';
+const deviceName = 'Pixel 2';
 const path = require('path');
 
 const basePath = 'dist';
@@ -47,7 +47,6 @@ const basePath = 'dist';
             const pathName = path.normalize(`${basePath}${entry.url.replace('https://www.vistaprint.com', '')}`);
             const dirName = path.dirname(pathName);
             if (!fs.existsSync(dirName)) {
-                console.log(`Creating directory ${dirName}`);
                 const dirs = dirName.split(path.sep);
                 let currentDirName = '.';
                 dirs.forEach((dir) => {
@@ -57,7 +56,6 @@ const basePath = 'dist';
                     }
                 });
             }
-            console.log(`Writing ${pathName}...`);
             fs.writeFileSync(pathName, entry.text);
         }
         totalBytes += entry.text.length;
@@ -74,7 +72,6 @@ const basePath = 'dist';
     }
 
     for (const entry of cssCoverage) {
-        console.log(entry.url)
         if (entry.url.indexOf('https://www.vistaprint.com') >= 0 && entry.url.indexOf('?GP=') < 0) {
             let pathName = path.normalize(`${basePath}${entry.url.replace('https://www.vistaprint.com', '')}`);
             if (pathName.indexOf('?') >= 0) {
@@ -82,7 +79,6 @@ const basePath = 'dist';
             }
             const dirName = path.dirname(pathName);
             if (!fs.existsSync(dirName)) {
-                console.log(`Creating directory ${dirName}`);
                 const dirs = dirName.split(path.sep);
                 let currentDirName = '.';
                 dirs.forEach((dir) => {
@@ -92,8 +88,8 @@ const basePath = 'dist';
                     }
                 });
             }
-            console.log(`Writing ${pathName}...`);
             fs.writeFileSync(pathName, entry.text);
+            fs.writeFileSync(`${pathName}-coverage.json`, JSON.stringify(entry), 'utf8');
         }
         totalBytes += entry.text.length;
         let entryBytes = 0;

@@ -3,3 +3,4 @@ coverage/*
 coverage.json
 dist/*
 screenshots/*
+.nyc_output/*

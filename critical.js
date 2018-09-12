@@ -6,7 +6,7 @@ console.log('Running critical...');
 critical.generate({
     base: `${basePath}`,
     src: 'index.html',
-    dest: 'main.css',
+    dest: 'critical.css',
     timeout: 300000,
     width: 800,
     height: 1280,
