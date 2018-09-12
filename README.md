@@ -1,5 +1,4 @@
 #USAGE
 
 1) `npm install`
-2) `npm run coverage`
-3) Open _./coverage/index.html_ in your favorite browser.
+2) `npm run get-critical` to generate the critical CSS (`SUCCESS.css`)
