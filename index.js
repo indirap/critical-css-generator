@@ -3,7 +3,7 @@ const devices = require('puppeteer/DeviceDescriptors');
 const fs = require('fs');
 const CleanCSS = require('clean-css');
 
-exports.criticalCss = (async (opts) => {
+exports.generate = (async (opts) => {
     const options = Object.assign({
         deviceName: 'Pixel 2',
         waitFor: 20000,

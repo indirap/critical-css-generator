@@ -1,4 +1,3 @@
-const pti = require('puppeteer-to-istanbul');
 const devices = require('puppeteer/DeviceDescriptors');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
@@ -25,18 +24,12 @@ const basePath = 'dist';
     await page.goto('https://www.vistaprint.com', {
         timeout: 100000
     });
-    await page.screenshot({path: './screenshots/' + deviceName + '-' + dateFormat(today, "yyyymmdd") + '.png', fullPage: true});
+    // await page.screenshot({path: './screenshots/' + deviceName + '-' + dateFormat(today, "yyyymmdd") + '.png', fullPage: true});
     
     const [jsCoverage, cssCoverage] = await Promise.all([
         page.coverage.stopJSCoverage(),
         page.coverage.stopCSSCoverage()
     ]);
-    try {
-        pti.write(jsCoverage);
-    } catch(err) {
-        console.warn("Failed to write istanbul report:");
-        console.warn(err.name + ": " + err.message);
-    }
 
     let totalBytes = 0;
     let usedBytes = 0;
