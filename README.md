@@ -1,4 +1,5 @@
 #USAGE
 
-1) `npm install`
-2) `npm run get-critical` to generate the critical CSS (`SUCCESS.css`)
+1) `npm install <package url>`
+2) `const criticalCss = require('critical-css').criticalCss`
+3) Example: `criticalCss({ url: 'https://www.vistaprint.com/business-cards/rounded-corner/templates' });`
