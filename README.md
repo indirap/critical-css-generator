@@ -4,8 +4,11 @@
 2) Run the following:
 ```
 const criticalCss = require('critical-css').criticalCss;
-criticalCss({ url: 'https://www.vistaprint.com/business-cards/rounded-corner/templates' });
+criticalCss.generate({
+    url: 'https://www.vistaprint.com/business-cards/rounded-corner/templates'
+});
 ```
+3) A `critical.css` file will be generated. Add this into the page!
 
 Options include:
 * url: URL to get critical CSS for.
