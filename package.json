@@ -13,6 +13,7 @@
     ],
     "dependencies": {
         "clean-css": "^4.2.1",
+        "css-selector-extract": "^4.0.0",
         "dateformat": "^3.0.3",
         "puppeteer": "^1.7.0"
     }
