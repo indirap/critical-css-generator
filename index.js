@@ -8,7 +8,8 @@ exports.generate = (async (opts) => {
     const options = Object.assign({
         deviceName: 'Pixel 2',
         waitFor: 20000,
-        path: 'critical.css',
+		path: 'critical.css',
+		viewport: true,
         cssSelectorFilter: []
     }, opts);
 
