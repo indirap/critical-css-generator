@@ -4,10 +4,10 @@ Extract critical css (above the fold) from a specific site using puppeteer.
 
 ### Usage
 
-1) `npm i https://s3-eu-west-1.amazonaws.com/vp-critical-css/critical-css-0.0.1.tgz`
+1) `npm i critical-css-generator`
 2) Run the following:
 ```
-const criticalCss = require('critical-css').criticalCss;
+const critical = require('critical-css-generator');
 critical.generate({
     url: 'https://www.vistaprint.com/business-cards',
     path: 'critical-business-cards.css',
