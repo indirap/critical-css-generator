@@ -1,6 +1,6 @@
 {
     "name": "critical-css-generator",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "main": "index",
     "repository": {
         "type" : "git",
@@ -11,6 +11,7 @@
     ],
     "dependencies": {
         "clean-css": "^4.2.1",
+        "css": "^2.2.4",
         "css-selector-extract": "^4.0.0",
         "puppeteer": "^1.7.0",
         "url-parse": "^1.4.3"
