@@ -5,6 +5,7 @@ const CleanCSS = require('clean-css');
 const cssMinifier = new CleanCSS({ compatibility: '*' });
 const cssSelectorExtract = require('css-selector-extract');
 const urlParse = require('url-parse');
+const css = require('css');
 
 exports.generate = (async (opts) => {
     const options = Object.assign({
@@ -37,6 +38,7 @@ exports.generate = (async (opts) => {
     for (const entry of cssCoverage) {
         if (entry.ranges.length > 0) {
             const url = urlParse(entry.url, true);
+            criticalCss += '/*' + entry.url + "*/ \n";
             criticalCssByUrl[url.pathname] = '';
             entry.ranges.forEach((range) => {
                 const str = entry.text.substring(range.start, range.end).replace("url('", `url('${url.origin}`) + "\n";
@@ -49,8 +51,14 @@ exports.generate = (async (opts) => {
 
     if (options.viewport) {
         // Get all CSS selectors from minified string
-        const cssSelectorRegex = /(\.)([\w-.\: ]+)/g; // TODO narrow down regex to not catch width and transition measurements (eg .25em)
-        const cssSelectors = criticalCss.match(cssSelectorRegex).filter((cssSelector, index, self) => self.indexOf(cssSelector) === index).map((cssSelector) => cssSelector.trim());
+        //TODO: https://www.npmjs.com/package/css
+        var criticalStyles = css.parse(criticalCss);
+        // const cssSelectorRegex = /([\w-.,\: ]+)({)/g; // TODO narrow down regex to not catch width and transition measurements (eg .25em)
+        
+        const cssSelectors = [];
+        criticalStyles.stylesheet.rules.filter((selectorElem) => selectorElem.type == 'rule').forEach((selectorElem) => selectorElem.selectors.forEach((elem) => cssSelectors.push(elem)));
+        
+        cssSelectors.map(selection => selection.replace('{','')).filter((cssSelector, index, self) => self.indexOf(cssSelector) === index).map((cssSelector) => cssSelector.trim());
 
         // Get all elements with CSS selectors above
         const elementsBySelector = {};
