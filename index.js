@@ -14,6 +14,8 @@ exports.generate = (async (opts) => {
 		path: 'critical.css',
 		viewport: true,
         cssSelectorFilter: [],
+        excludeCssFiles: [],
+        includeCssFiles: [],
         generateSeparateFiles: false
     }, opts);
 
@@ -36,29 +38,36 @@ exports.generate = (async (opts) => {
     let criticalCss = '';
     const criticalCssByUrl = {};
     for (const entry of cssCoverage) {
-        if (entry.ranges.length > 0) {
-            const url = urlParse(entry.url, true);
-            criticalCss += '/*' + entry.url + "*/ \n";
-            criticalCssByUrl[url.pathname] = '';
-            entry.ranges.forEach((range) => {
-                const str = entry.text.substring(range.start, range.end).replace("url('", `url('${url.origin}`) + "\n";
-                criticalCss += str;
-                criticalCssByUrl[url.pathname] += str;
-            });
+        const url = urlParse(entry.url, true);
+        if (options.includeCssFiles.find((cssFile) => cssFile.test(entry.url))) {
+            criticalCss += '/*' + url.pathname + '*/ \n';
+            criticalCss += entry.text;
+            criticalCssByUrl[url.pathname] += entry.text;
+        } else if (entry.ranges.length > 0) {
+            if (!options.excludeCssFiles.find((cssFile) => cssFile.test(entry.url))) {
+                criticalCss += '/*' + url.pathname + "*/ \n";
+                criticalCssByUrl[url.pathname] = '';
+                entry.ranges.forEach((range) => {
+                    const str = entry.text.substring(range.start, range.end).replace("url('", `url('${url.origin}`) + "\n";
+                    criticalCss += str;
+                    criticalCssByUrl[url.pathname] += str;
+                });
+            }
         }
     }
     criticalCss += "body{width:100vw}";
 
     if (options.viewport) {
         // Get all CSS selectors from minified string
-        //TODO: https://www.npmjs.com/package/css
         var criticalStyles = css.parse(criticalCss);
-        // const cssSelectorRegex = /([\w-.,\: ]+)({)/g; // TODO narrow down regex to not catch width and transition measurements (eg .25em)
         
         const cssSelectors = [];
-        criticalStyles.stylesheet.rules.filter((selectorElem) => selectorElem.type == 'rule').forEach((selectorElem) => selectorElem.selectors.forEach((elem) => cssSelectors.push(elem)));
-        
-        cssSelectors.map(selection => selection.replace('{','')).filter((cssSelector, index, self) => self.indexOf(cssSelector) === index).map((cssSelector) => cssSelector.trim());
+        criticalStyles.stylesheet.rules
+            .filter((selectorElem) => selectorElem.type == 'rule')
+            .forEach((selectorElem) => selectorElem.selectors.forEach((elem) => cssSelectors.push(elem)));
+        cssSelectors
+            .filter((cssSelector, index, self) => self.indexOf(cssSelector) === index)
+            .map((cssSelector) => cssSelector.trim());
 
         // Get all elements with CSS selectors above
         const elementsBySelector = {};
@@ -71,7 +80,7 @@ exports.generate = (async (opts) => {
                         elementsBySelector[cssSelector] = elements;
                     })
                     .catch((err) => {
-                        // console.error(err); // so noisy, pls just shut up
+                        console.error(err);
                     })
             )
         });
@@ -120,37 +129,37 @@ exports.generate = (async (opts) => {
             });
     }
 
-    let promises = [(new Promise((resolve, reject) => {
-        const minifiedCss = cssMinifier.minify(criticalCss).styles;
-        fs.writeFile(options.path, minifiedCss, 'utf8', (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    }))];
-    
+    let promises = [
+        (new Promise((resolve, reject) => {
+            const minifiedCss = cssMinifier.minify(criticalCss).styles;
+            fs.writeFile(options.path, minifiedCss, 'utf8', (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        }))
+    ];
+
     if (options.generateSeparateFiles) {
-        fs.mkdirSync('critical');
-        Object.keys(criticalCssByUrl).forEach((url) => {
-            promises.push((new Promise((resolve, reject) => {
+        Object.keys(criticalCssByUrl).forEach((url) => promises.push(
+            (new Promise((resolve, reject) => {
                 const arr = url.split('/');
                 const fileName = arr[arr.length - 1];
                 const minifiedCss = cssMinifier.minify(criticalCssByUrl[url]).styles;
                 fs.writeFile(`critical/${fileName}`, minifiedCss, 'utf8', (err) => {
                     if (err) {
-                        // reject(err);
                         console.warn(err);
                         resolve();
                     } else {
                         resolve();
                     }
                 });
-            })));
-        });
+            })))
+        );
     }
-
+    
     await Promise.all(promises);
     
     await browser.close();
