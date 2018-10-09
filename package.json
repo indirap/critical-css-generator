@@ -1,6 +1,6 @@
 {
     "name": "critical-css-generator",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "main": "index",
     "repository": {
         "type" : "git",
